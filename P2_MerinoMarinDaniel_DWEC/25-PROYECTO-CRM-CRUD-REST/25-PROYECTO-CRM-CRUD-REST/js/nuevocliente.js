@@ -1,5 +1,3 @@
-import { mostrarClientes } from "./funciones"
-
 document.addEventListener('DOMContentLoaded', function () {
     const dbName = "Clientes"
     const dbVersion = 1
@@ -14,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     request.onsuccess = function (event) {
         db = event.target.result
-        mostrarClientes(db)
+        mostrarClientes()
     }
 
     request.onupgradeneeded = function (event) {
@@ -28,6 +26,26 @@ document.addEventListener('DOMContentLoaded', function () {
             objectStore.createIndex("email", "email", { unique: true })
             objectStore.createIndex("telefono", "telefono", { unique: true })
             objectStore.createIndex("empresa", "empresa", { unique: false })
+        }
+    }
+
+    // Función para mostrar los clientes en la interfaz
+    function mostrarClientes() {
+        if (!db) {
+            console.error("La base de datos no está disponible.")
+            return
+        }
+
+        // Inicia una transacción de solo lectura en el almacén de objetos "clientes"
+        const transaction = db.transaction(["clientes"], "readonly")
+        const objectStore = transaction.objectStore("clientes")
+        const request = objectStore.getAll()
+
+        request.onsuccess = function (event) {
+            console.log("Clientes almacenados en la base de datos:")
+            event.target.result.forEach(function (cliente) {
+                console.log(cliente)
+            })
         }
     }
 
